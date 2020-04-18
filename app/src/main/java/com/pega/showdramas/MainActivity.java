@@ -5,6 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.content.Context;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,16 +26,42 @@ import java.util.ArrayList;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
+    ListView listView;
+    Context context;
+    ArrayList<Drama> dramasData;
+    CustomAdapter customAdapter;
+    Drama drama;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
         setContentView(R.layout.activity_main);
+
+        //getviews
+        listView = findViewById(R.id.listView);
+        dramasData = new ArrayList<>();
+
+        //get drama data from an url
+        getData();
+
+        customAdapter = new CustomAdapter(context,dramasData);
+        listView.setAdapter(customAdapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Toast.makeText(context,dramasData.get(position).getName(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    private void getData() {
         new retrievedata().execute();
     }
 }
