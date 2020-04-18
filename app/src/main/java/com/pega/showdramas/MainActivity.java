@@ -146,14 +146,19 @@ class retrievedata extends AsyncTask<Void, Void, ArrayList<Object>> {
                 try {
                     json = new JSONObject(response);
                     JSONArray dramas = json.getJSONArray("data");
-                    int id = dramas.getJSONObject(0).getInt("drama_id");
-                    String imageurl = dramas.getJSONObject(0).getString("thumb");
-                    String name = dramas.getJSONObject(0).getString("name");
-                    //iString total_views = dramas.getJSONObject(0).getString("total_views");
-                    String rating = dramas.getJSONObject(0).getString("rating");
-                    String created_at = dramas.getJSONObject(0).getString("created_at");
-                    Drama tmp = new Drama(id, imageurl, name, rating, created_at);
-                    mDatalist.add(tmp);
+                    for (int i = 0; i < dramas.length(); i++) {
+                        JSONObject jsonObject = dramas.getJSONObject(i);
+
+                        int id = jsonObject.getInt("drama_id");
+                        String imageurl = jsonObject.getString("thumb");
+                        String name = jsonObject.getString("name");
+                        //String total_views = jsonObject.getString("total_views");
+                        String rating = jsonObject.getString("rating");
+                        String created_at = jsonObject.getString("created_at");
+
+                        Drama tmp = new Drama(id, imageurl, name, rating, created_at);
+                        mDatalist.add(tmp);
+                    }
                     mAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
