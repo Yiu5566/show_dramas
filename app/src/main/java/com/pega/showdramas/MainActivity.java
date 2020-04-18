@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     ArrayList<Drama> dramasData;
     CustomAdapter customAdapter;
-    Drama drama;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,10 +40,6 @@ public class MainActivity extends AppCompatActivity {
         //getviews
         listView = findViewById(R.id.listView);
         dramasData = new ArrayList<>();
-
-        //get drama data from an url
-        getData();
-
         customAdapter = new CustomAdapter(context,dramasData);
         listView.setAdapter(customAdapter);
 
@@ -54,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(context,dramasData.get(position).getName(),Toast.LENGTH_SHORT).show();
             }
         });
+
+        //get drama data from an url
+        getData();
     }
 
     @Override
@@ -62,12 +60,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getData() {
-        new retrievedata().execute();
+        new retrievedata(customAdapter, dramasData).execute();
     }
 }
 
 class retrievedata extends AsyncTask<Void, Void, ArrayList<Object>> {
     final static String TAG = "retrievedata";
+    ArrayList<Drama> mDatalist;
+    CustomAdapter mAdapter;
+
+    public retrievedata(CustomAdapter adapter, ArrayList<Drama> datalist) {
+        super();
+        mAdapter = adapter;
+        mDatalist = datalist;
+    }
 
     @Override
     protected ArrayList<Object> doInBackground(Void... params) {
@@ -140,8 +146,15 @@ class retrievedata extends AsyncTask<Void, Void, ArrayList<Object>> {
                 try {
                     json = new JSONObject(response);
                     JSONArray dramas = json.getJSONArray("data");
-                    String tmp = dramas.getJSONObject(0).getString("name");
-                    Log.i(TAG, "yiu test："+ tmp);
+                    int id = dramas.getJSONObject(0).getInt("drama_id");
+                    String imageurl = dramas.getJSONObject(0).getString("thumb");
+                    String name = dramas.getJSONObject(0).getString("name");
+                    //iString total_views = dramas.getJSONObject(0).getString("total_views");
+                    String rating = dramas.getJSONObject(0).getString("rating");
+                    String created_at = dramas.getJSONObject(0).getString("created_at");
+                    Drama tmp = new Drama(id, imageurl, name, rating, created_at);
+                    mDatalist.add(tmp);
+                    mAdapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
