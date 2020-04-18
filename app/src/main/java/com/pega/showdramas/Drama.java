@@ -1,13 +1,15 @@
 package com.pega.showdramas;
 
-public class drama {
+public class Drama {
+    private int mId;
     private String mImageUrl;
     private String mName;
     private String mRating;
     private String mCreatedAt;
 
 
-    public drama(String imageUrl, String name, String rating, String created_at) {
+    public Drama(int id, String imageUrl, String name, String rating, String created_at) {
+        mId = id;
         mImageUrl = imageUrl;
         mName = name;
         mRating = rating;
@@ -28,5 +30,9 @@ public class drama {
 
     public String getCreatedAt() {
         return mCreatedAt;
+    }
+
+    public int getId() {
+        return mId;
     }
 }
