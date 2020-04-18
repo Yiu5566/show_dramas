@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 
@@ -46,14 +48,15 @@ public class CustomAdapter extends BaseAdapter {
             rowView = layoutInflater.inflate(R.layout.row, null, true);
         }
         //link views
-        //ImageView countryFlagIv = rowView.findViewById(R.id.countryFlagIv);
+        ImageView thumb_v = rowView.findViewById(R.id.thumb);
         TextView name_v = rowView.findViewById(R.id.name);
         TextView rating_v = rowView.findViewById(R.id.rating);
         TextView created_at_v = rowView.findViewById(R.id.created_at);
 
         drama = dramasData.get(position);
-
-        //countryFlagIv.setImageResource(drama.getImage());
+        Picasso.get()
+                .load(drama.getImageUrl())
+                .into(thumb_v);
         name_v.setText(drama.getName());
         rating_v.setText("rating : " + drama.getRating());
         created_at_v.setText("created_at : " + drama.getCreatedAt());
