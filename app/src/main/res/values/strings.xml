@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">show dramas</string>
+    <string name="edittext_default">搜尋標題</string>
 </resources>

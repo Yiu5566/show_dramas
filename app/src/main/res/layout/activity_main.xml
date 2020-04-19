@@ -18,11 +18,12 @@
         android:textColorHighlight="#cccccc"
         android:textScaleX="1.5"
         android:typeface="monospace"
-        android:hint="提示字樣"
+        android:hint="@string/edittext_default"
         android:textColorHint="#238745"
         android:singleLine = "true"
         android:ellipsize="end"
-        android:inputType="none"/>
+        android:inputType="none"
+        android:importantForAutofill="no" />
 
     <ListView
         android:id="@+id/listView"
