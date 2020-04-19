@@ -14,6 +14,7 @@ import android.util.Log;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -86,14 +87,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handle_msg_show_normal_ui(Message msg){
+        EditText edit_v = this.findViewById(R.id.EditText01);
+        edit_v.setVisibility(View.VISIBLE);
 
+        TextView error_v = this.findViewById(R.id.error_msg);
+        String err_info = (String) msg.obj;
+        error_v.setText(err_info);
+        error_v.setVisibility(View.GONE);
+
+        Button btn_v = this.findViewById(R.id.error_retry_btn);
+        btn_v.setVisibility(View.GONE);
     }
 
     private void handle_msg_show_error_ui(Message msg){
+        EditText edit_v = this.findViewById(R.id.EditText01);
+        edit_v.setVisibility(View.INVISIBLE);
+
         TextView error_v = this.findViewById(R.id.error_msg);
         String err_info = (String) msg.obj;
         error_v.setText(err_info);
         error_v.setVisibility(View.VISIBLE);
+
+        Button btn_v = this.findViewById(R.id.error_retry_btn);
+        btn_v.setVisibility(View.VISIBLE);
     }
 
     private void handle_msg_update_db(Message msg){
@@ -137,12 +153,19 @@ public class MainActivity extends AppCompatActivity {
                 String state = (String) result.get(0);
                 //Log.i(TAG,"yiu Thread:"+Thread.currentThread().getName());
                 if (state.equals("200")){
+                    // enable normal ui
+                    Message msg_show_ui;
+                    msg_show_ui = handler.obtainMessage(MSG_SHOW_NORMAL_UI);
+                    handler.sendMessage(msg_show_ui);
+
+                    //put data to listview and edittext in normal ui
                     Message message;
                     String response = (String) result.get(1);
                     message = handler.obtainMessage(MSG_UPDATE_LISTVIEW, response);
                     handler.sendMessage(message);
                 }else{
                     Log.i(TAG, "yiu wrong handle："+ state);
+                    //enable error ui
                     Message message;
                     message = handler.obtainMessage(MSG_SHOW_ERROR_UI, state);
                     handler.sendMessage(message);
@@ -218,6 +241,17 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         setContentView(R.layout.activity_main);
         //Log.i(TAG,"yiu  ui Thread:"+Thread.currentThread().getName());
+
+        // button to retry getting json from internet
+        Button btn_v = findViewById(R.id.error_retry_btn);
+        btn_v.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                Message msg = new Message();
+                msg.what = MSG_GET_JSON;
+                handler.sendMessage(msg);
+            }
+        });
 
         //getviews
         listView = findViewById(R.id.listView);
