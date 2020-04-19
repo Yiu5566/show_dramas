@@ -3,7 +3,9 @@ package com.pega.showdramas;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     ArrayList<Drama> dramasData;
     CustomAdapter customAdapter;
+    private DBHelper DH = null;
 
     private TestHandler handler = new TestHandler(this);
     final static int MSG_GET_JSON = 0;
@@ -114,6 +117,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void handle_msg_update_db(Message msg){
         Log.i(TAG, "yiu start handle_msg_update_db");
+        SQLiteDatabase db = DH.getWritableDatabase();
+        for (int i=0; i< dramasData.size();i++){
+            Drama tmp = dramasData.get(i);
+            ContentValues values = new ContentValues();
+            values.put("_NAME", tmp.getName());
+            values.put("_RATING", tmp.getRating());
+            values.put("_CREATED_AT", tmp.getCreatedAt());
+            values.put("_TOTAL_VIEWS", tmp.getTotalviews());
+            db.insert("MySample", null, values);
+        }
     }
 
         private void handle_msg_update_listview(Message msg){
@@ -139,6 +152,11 @@ public class MainActivity extends AppCompatActivity {
                     dramasData.add(tmp);
                 }
                 customAdapter.notifyDataSetChanged();
+
+                //construct db from arraylist
+                Message message;
+                message = handler.obtainMessage(MSG_UPDATE_DB);
+                handler.sendMessage(message);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -242,6 +260,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         //Log.i(TAG,"yiu  ui Thread:"+Thread.currentThread().getName());
 
+        DH = new DBHelper(this);
+
         // button to retry getting json from internet
         Button btn_v = findViewById(R.id.error_retry_btn);
         btn_v.setOnClickListener(new Button.OnClickListener(){
@@ -295,5 +315,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DH.close();
     }
 }
