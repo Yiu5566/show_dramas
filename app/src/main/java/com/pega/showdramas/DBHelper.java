@@ -17,6 +17,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         final String SQL = "CREATE TABLE IF NOT EXISTS " + _TableName + "( " +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "_DRAMA_ID INTEGER, " +
                 "_NAME TEXT, " +
                 "_RATING TEXT," +
                 "_CREATED_AT TEXT," +

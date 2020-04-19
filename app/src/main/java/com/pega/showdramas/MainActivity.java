@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i=0; i< dramasData.size();i++){
             Drama tmp = dramasData.get(i);
             ContentValues values = new ContentValues();
+            values.put("_DRAMA_ID", tmp.getId());
             values.put("_NAME", tmp.getName());
             values.put("_RATING", tmp.getRating());
             values.put("_CREATED_AT", tmp.getCreatedAt());
@@ -261,6 +263,9 @@ public class MainActivity extends AppCompatActivity {
         //Log.i(TAG,"yiu  ui Thread:"+Thread.currentThread().getName());
 
         DH = new DBHelper(this);
+        SQLiteDatabase db = DH.getReadableDatabase();
+        Cursor cursor = db.query("MySample", new String[]{"_DRAMA_ID","_NAME"}, null, null, null, null, null);
+        Log.i(TAG, "onCreate check db record count: " + cursor.getCount());
 
         // button to retry getting json from internet
         Button btn_v = findViewById(R.id.error_retry_btn);
