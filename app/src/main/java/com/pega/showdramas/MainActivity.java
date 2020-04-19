@@ -54,10 +54,8 @@ public class MainActivity extends AppCompatActivity {
                 case MSG_GET_JSON:
                     MainActivity activity = (MainActivity) mActivity.get();
                     if (activity != null) {
-                        activity.handleMessage(msg);
-                        Log.i(TAG, "yiu case1");
+                        activity.handle_msg_get_json(msg);
                     }
-                    Log.i(TAG, "yiu case2");
                     break;
                 default:
                     break;
@@ -65,8 +63,79 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void handleMessage(Message msg){
-        Toast.makeText(this, "hahaha", Toast.LENGTH_LONG).show();
+    private void handle_msg_get_json(Message msg){
+        Thread thread = new Thread(){
+            @Override
+            public void run() {
+                ArrayList<Object> result = getJson();
+                String state = (String) result.get(0);
+                Log.i(TAG, "yiu use ArrayList to store state and data in handler:"+state);
+
+                Message message;
+                String obj = "OK";
+                message = handler.obtainMessage(MSG_UPDATE_LISTVIEW,obj);
+                handler.sendMessage(message);
+            }
+        };
+        thread.start();
+    }
+
+    private ArrayList<Object> getJson(){
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        URL url;
+        ArrayList<Object>  result = new ArrayList<Object>();
+        try {
+            url = new URL("https://static.linetv.tw/interview/dramas-sample.json");
+            urlConnection = (HttpURLConnection)url.openConnection();
+            urlConnection.setRequestMethod("GET"); //Your method here
+            urlConnection.connect();
+
+
+            int statusCode = urlConnection.getResponseCode();
+
+
+            switch (statusCode) {
+                case 200:
+                    result.add("200");
+                    InputStream inputStream = urlConnection.getInputStream();
+                    StringBuffer buffer = new StringBuffer();
+                    if (inputStream == null) {
+                        result.add(null);
+                        return result;
+                    }
+                    reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+
+                    String line;
+                    while ((line = reader.readLine()) != null)
+                        buffer.append(line + "\n");
+
+                    if (buffer.length() == 0) {
+                        result.add(null);
+                        return result;
+                    }
+
+                    result.add(buffer.toString());
+            }
+
+            return result;
+        } catch (IOException e) {
+            Log.e(TAG, "IO Exception", e);
+            result.add(e);
+            return result;
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (final IOException e) {
+                    Log.e(TAG, "Error closing stream", e);
+                }
+            }
+        }
     }
 
     @Override
