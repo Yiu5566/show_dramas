@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handle_msg_update_db_from_list(Message msg){
-        Log.i(TAG, "yiu start handle_msg_update_db");
         SQLiteDatabase db = DH.getWritableDatabase();
         for (int i=0; i< dramasData.size();i++){
             Drama tmp = dramasData.get(i);
@@ -197,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 ArrayList<Object> result = getJson();
                 String state = (String) result.get(0);
-                //Log.i(TAG,"yiu Thread:"+Thread.currentThread().getName());
                 if (state.equals("200")){
                     // enable normal ui
                     Message msg_show_ui;
@@ -210,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
                     message = handler.obtainMessage(MSG_UPDATE_LISTVIEW, response);
                     handler.sendMessage(message);
                 }else{
-                    Log.i(TAG, "yiu wrong handle："+ state);
                     //enable error ui
                     Message message;
                     message = handler.obtainMessage(MSG_SHOW_ERROR_UI, state);
@@ -286,13 +283,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         context = this;
         setContentView(R.layout.activity_main);
-        //Log.i(TAG,"yiu  ui Thread:"+Thread.currentThread().getName());
 
         DH = new DBHelper(this);
         SQLiteDatabase db = DH.getReadableDatabase();
         Cursor cursor = db.query("MySample", new String[]{"_DRAMA_ID","_NAME"}, null, null, null, null, null);
 
-        // button to retry getting json from internet
+        // error ui: button to retry getting json from internet
         Button btn_v = findViewById(R.id.error_retry_btn);
         btn_v.setOnClickListener(new Button.OnClickListener(){
             @Override
@@ -303,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //getviews
+        // normal ui: listview
         listView = findViewById(R.id.listView);
         dramasData = new ArrayList<>();
         customAdapter = new CustomAdapter(context,dramasData);
@@ -320,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        // normal ui: for searching drama name on listview
         EditText edt;
         edt = findViewById(R.id.EditText01);
         edt.addTextChangedListener(new TextWatcher(){
