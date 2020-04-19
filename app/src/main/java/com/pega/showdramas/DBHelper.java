@@ -18,6 +18,8 @@ public class DBHelper extends SQLiteOpenHelper {
         final String SQL = "CREATE TABLE IF NOT EXISTS " + _TableName + "( " +
                 "_id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "_DRAMA_ID INTEGER, " +
+                "_IMG_URL TEXT, " +
+                "_IMG BLOB, " +
                 "_NAME TEXT, " +
                 "_RATING TEXT," +
                 "_CREATED_AT TEXT," +

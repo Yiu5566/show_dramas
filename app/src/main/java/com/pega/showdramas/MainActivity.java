@@ -47,9 +47,10 @@ public class MainActivity extends AppCompatActivity {
     private TestHandler handler = new TestHandler(this);
     final static int MSG_GET_JSON = 0;
     final static int MSG_UPDATE_LISTVIEW = 1;
-    final static int MSG_UPDATE_DB = 2;
+    final static int MSG_UPDATE_DB_FROM_LIST = 2;
     final static int MSG_SHOW_NORMAL_UI = 3;
     final static int MSG_SHOW_ERROR_UI = 4;
+    final static int MSG_UPDATE_LIST_FROM_DB = 5;
 
     //for Serializable
     public static final String INTENT_PARAM_KEY_DRAMA = "INTENT_PARAM_KEY_DRAMA";
@@ -74,8 +75,11 @@ public class MainActivity extends AppCompatActivity {
                     case MSG_UPDATE_LISTVIEW:
                         activity.handle_msg_update_listview(msg);
                         break;
-                    case MSG_UPDATE_DB:
-                        activity.handle_msg_update_db(msg);
+                    case MSG_UPDATE_DB_FROM_LIST:
+                        activity.handle_msg_update_db_from_list(msg);
+                        break;
+                    case MSG_UPDATE_LIST_FROM_DB:
+                        activity.handle_msg_update_list_from_db(msg);
                         break;
                     case MSG_SHOW_NORMAL_UI:
                         activity.handle_msg_show_normal_ui(msg);
@@ -116,19 +120,41 @@ public class MainActivity extends AppCompatActivity {
         btn_v.setVisibility(View.VISIBLE);
     }
 
-    private void handle_msg_update_db(Message msg){
+    private void handle_msg_update_db_from_list(Message msg){
         Log.i(TAG, "yiu start handle_msg_update_db");
         SQLiteDatabase db = DH.getWritableDatabase();
         for (int i=0; i< dramasData.size();i++){
             Drama tmp = dramasData.get(i);
             ContentValues values = new ContentValues();
             values.put("_DRAMA_ID", tmp.getId());
+            values.put("_IMG_URL", tmp.getImageUrl());
             values.put("_NAME", tmp.getName());
             values.put("_RATING", tmp.getRating());
             values.put("_CREATED_AT", tmp.getCreatedAt());
             values.put("_TOTAL_VIEWS", tmp.getTotalviews());
             db.insert("MySample", null, values);
         }
+    }
+
+    private void handle_msg_update_list_from_db(Message msg) {
+        DH = new DBHelper(this);
+        SQLiteDatabase db = DH.getReadableDatabase();
+        Cursor cursor = db.query("MySample",
+                new String[]{"_DRAMA_ID","_IMG_URL","_NAME","_RATING", "_CREATED_AT", "_TOTAL_VIEWS"},
+                null, null, null, null, null);
+        while(cursor.moveToNext()) {
+            int id = cursor.getInt(0);
+            String imageurl = cursor.getString(1);
+            String name = cursor.getString(2);
+            String rating = cursor.getString(3);
+            String created_at = cursor.getString(4);
+            String total_views = cursor.getString(5);
+
+            Drama tmp = new Drama(id, imageurl, name, rating, created_at, total_views);
+            dramasData.add(tmp);
+        }
+        cursor.close();
+        customAdapter.notifyDataSetChanged();
     }
 
         private void handle_msg_update_listview(Message msg){
@@ -157,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
                 //construct db from arraylist
                 Message message;
-                message = handler.obtainMessage(MSG_UPDATE_DB);
+                message = handler.obtainMessage(MSG_UPDATE_DB_FROM_LIST);
                 handler.sendMessage(message);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -265,7 +291,6 @@ public class MainActivity extends AppCompatActivity {
         DH = new DBHelper(this);
         SQLiteDatabase db = DH.getReadableDatabase();
         Cursor cursor = db.query("MySample", new String[]{"_DRAMA_ID","_NAME"}, null, null, null, null, null);
-        Log.i(TAG, "onCreate check db record count: " + cursor.getCount());
 
         // button to retry getting json from internet
         Button btn_v = findViewById(R.id.error_retry_btn);
@@ -312,9 +337,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Message msg = new Message();
-        msg.what = MSG_GET_JSON;
-        handler.sendMessage(msg);
+        if (cursor.getCount() == 0) {
+            Log.i(TAG, "onCreate use data from internet");
+            Message msg = new Message();
+            msg.what = MSG_GET_JSON;
+            handler.sendMessage(msg);
+        }else{
+            Log.i(TAG, "onCreate use data from db");
+            Message msg = new Message();
+            msg.what = MSG_UPDATE_LIST_FROM_DB;
+            handler.sendMessage(msg);
+        }
+        cursor.close();
     }
 
     @Override
