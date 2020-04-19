@@ -2,6 +2,7 @@ package com.pega.showdramas;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,20 +22,16 @@ public class DetailActivity extends AppCompatActivity {
         TextView created_at_v = findViewById(R.id.created_at);
         TextView total_views_v = findViewById(R.id.total_views);
 
+        Intent intent = getIntent();
+        Object obj = intent.getSerializableExtra(MainActivity.INTENT_PARAM_KEY_DRAMA);
+        Drama drama = (Drama)obj;
 
-//        drama = dramasData.get(position);
-        String testurl = "https://i.pinimg.com/originals/61/d4/be/61d4be8bfc29ab2b6d5cab02f72e8e3b.jpg";
         Picasso.get()
-                .load(testurl)
+                .load(drama.getImageUrl())
                 .into(thumb_v);
-//        name_v.setText(drama.getName());
-//        rating_v.setText("rating : " + drama.getRating());
-//        created_at_v.setText("created at : " + drama.getCreatedAt());
-//        total_views_v.setText("total views : " + drama.getTotalviews());
-
-        name_v.setText("致我們單純的小美好");
-        rating_v.setText("rating : " + "test 123");
-        created_at_v.setText("created_at : " + "test 456");
-        total_views_v.setText("total views : " + "23562274");
+        name_v.setText(drama.getName());
+        rating_v.setText("rating : " + drama.getRating());
+        created_at_v.setText("created at : " + drama.getCreatedAt());
+        total_views_v.setText("total views : " + drama.getTotalviews());
     }
 }

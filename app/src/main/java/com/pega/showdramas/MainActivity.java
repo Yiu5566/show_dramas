@@ -44,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
     final static int MSG_UPDATE_LISTVIEW = 1;
     final static int MSG_UPDATE_DB = 2;
 
+    //for Serializable
+    public static final String INTENT_PARAM_KEY_DRAMA = "INTENT_PARAM_KEY_DRAMA";
+
     static class TestHandler extends Handler{
 
         private WeakReference<Activity> mActivity;
@@ -204,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Toast.makeText(context,dramasData.get(position).getName(),Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, DetailActivity.class);
+                intent.putExtra(MainActivity.INTENT_PARAM_KEY_DRAMA, dramasData.get(position));
                 startActivity(intent);
             }
         });

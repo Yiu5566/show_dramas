@@ -1,6 +1,8 @@
 package com.pega.showdramas;
 
-public class Drama {
+import java.io.Serializable;
+
+public class Drama implements Serializable {
     private int mId;
     private String mImageUrl;
     private String mName;
