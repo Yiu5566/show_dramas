@@ -3,6 +3,7 @@ package com.pega.showdramas;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -93,8 +94,10 @@ public class MainActivity extends AppCompatActivity {
                     //String total_views = jsonObject.getString("total_views");
                     String rating = jsonObject.getString("rating");
                     String created_at = jsonObject.getString("created_at");
+                    String total_views = jsonObject.getString("total_views");
 
-                    Drama tmp = new Drama(id, imageurl, name, rating, created_at);
+
+                    Drama tmp = new Drama(id, imageurl, name, rating, created_at, total_views);
                     dramasData.add(tmp);
                 }
                 customAdapter.notifyDataSetChanged();
@@ -199,7 +202,9 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(context,dramasData.get(position).getName(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context,dramasData.get(position).getName(),Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, DetailActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -220,8 +225,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //get drama data from an url
-        //getData();
         Message msg = new Message();
         msg.what = MSG_GET_JSON;
         handler.sendMessage(msg);
