@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private TestHandler handler = new TestHandler(this);
     final static int MSG_GET_JSON = 0;
     final static int MSG_UPDATE_LISTVIEW = 1;
+    final static int MSG_UPDATE_DB = 2;
 
     static class TestHandler extends Handler{
 
@@ -50,32 +51,71 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            switch (msg.what){
-                case MSG_GET_JSON:
-                    MainActivity activity = (MainActivity) mActivity.get();
-                    if (activity != null) {
+            MainActivity activity = (MainActivity) mActivity.get();
+            if (activity != null) {
+                switch (msg.what) {
+                    case MSG_GET_JSON:
                         activity.handle_msg_get_json(msg);
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    case MSG_UPDATE_LISTVIEW:
+                        activity.handle_msg_update_listview(msg);
+                        break;
+                    case MSG_UPDATE_DB:
+                        activity.handle_msg_update_db(msg);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
 
-    private void handle_msg_get_json(Message msg){
+    private void handle_msg_update_db(Message msg){
+        Log.i(TAG, "yiu start handle_msg_update_db");
+    }
+
+        private void handle_msg_update_listview(Message msg){
+        String response = (String) msg.obj;
+        if(response != null) {
+            JSONObject json = null;
+            try {
+                json = new JSONObject(response);
+                JSONArray dramas = json.getJSONArray("data");
+                for (int i = 0; i < dramas.length(); i++) {
+                    JSONObject jsonObject = dramas.getJSONObject(i);
+
+                    int id = jsonObject.getInt("drama_id");
+                    String imageurl = jsonObject.getString("thumb");
+                    String name = jsonObject.getString("name");
+                    //String total_views = jsonObject.getString("total_views");
+                    String rating = jsonObject.getString("rating");
+                    String created_at = jsonObject.getString("created_at");
+
+                    Drama tmp = new Drama(id, imageurl, name, rating, created_at);
+                    dramasData.add(tmp);
+                }
+                customAdapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+        private void handle_msg_get_json(Message msg){
         Thread thread = new Thread(){
             @Override
             public void run() {
                 ArrayList<Object> result = getJson();
                 String state = (String) result.get(0);
-                Log.i(TAG, "yiu use ArrayList to store state and data in handler:"+state);
-                Log.i(TAG,"yiu Thread:"+Thread.currentThread().getName());
-
-                Message message;
-                String obj = "OK";
-                message = handler.obtainMessage(MSG_UPDATE_LISTVIEW,obj);
-                handler.sendMessage(message);
+                //Log.i(TAG,"yiu Thread:"+Thread.currentThread().getName());
+                if (state.equals("200")){
+                    Message message;
+                    String response = (String) result.get(1);
+                    message = handler.obtainMessage(MSG_UPDATE_LISTVIEW, response);
+                    handler.sendMessage(message);
+                }else{
+                    Log.i(TAG, "yiu wrong handle："+ state);
+                }
             }
         };
         thread.start();
@@ -144,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         context = this;
         setContentView(R.layout.activity_main);
-        Log.i(TAG,"yiu  ui Thread:"+Thread.currentThread().getName());
+        //Log.i(TAG,"yiu  ui Thread:"+Thread.currentThread().getName());
 
         //getviews
         listView = findViewById(R.id.listView);
