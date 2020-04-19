@@ -7,17 +7,23 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 
-public class CustomAdapter extends BaseAdapter {
+public class CustomAdapter extends BaseAdapter implements Filterable{
     Context context;
     ArrayList<Drama> dramasData;
     LayoutInflater layoutInflater;
     Drama drama;
+
+    //new variable for filter
+    private ArrayList<Drama> mOriginalValues;
+    private MyFilter filter;
 
     public CustomAdapter(Context context, ArrayList<Drama> data) {
         this.context = context;
@@ -62,5 +68,57 @@ public class CustomAdapter extends BaseAdapter {
         created_at_v.setText("created_at : " + drama.getCreatedAt());
 
         return rowView;
+    }
+
+    @Override
+    public Filter getFilter() {
+        if (filter == null){
+            filter  = new MyFilter();
+        }
+        return filter;
+    }
+    
+    private class MyFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            constraint = constraint.toString();
+            FilterResults result = new FilterResults();
+            if (mOriginalValues == null) {
+                synchronized (this) {
+                    mOriginalValues = new ArrayList<Drama>(dramasData);
+                }
+            }
+            if (constraint != null && constraint.toString().length() > 0) {
+                ArrayList<Drama> filteredItems = new ArrayList<Drama>();
+                for (int i = 0, l = mOriginalValues.size(); i < l; i++) {
+                    Drama m = mOriginalValues.get(i);
+                    if (m.getName().contains(constraint)) {
+                        //filteredItems.add(mOriginalValues.get((i/4)*4));
+                        filteredItems.add(m);
+                    }
+                }
+                result.count = filteredItems.size();
+                result.values = filteredItems;
+            } else {
+                synchronized (this) {
+                    ArrayList<Drama> list = new ArrayList<Drama>(mOriginalValues);
+                    result.values = list;
+                    result.count = list.size();
+                }
+            }
+            return result;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+            dramasData = (ArrayList<Drama>) results.values;
+            if (results.count > 0) {
+                notifyDataSetChanged();
+            } else {
+                notifyDataSetInvalidated();
+            }
+        }
     }
 }

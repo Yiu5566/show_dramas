@@ -7,10 +7,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -191,11 +194,29 @@ public class MainActivity extends AppCompatActivity {
         dramasData = new ArrayList<>();
         customAdapter = new CustomAdapter(context,dramasData);
         listView.setAdapter(customAdapter);
+        listView.setTextFilterEnabled(true);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Toast.makeText(context,dramasData.get(position).getName(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+        EditText edt;
+        edt = findViewById(R.id.EditText01);
+        edt.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void onTextChanged( CharSequence arg0, int arg1, int arg2, int
+                    arg3){}
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int
+                    arg3){}
+            @Override
+            public void afterTextChanged(Editable arg0)
+            {
+                customAdapter.getFilter().filter(arg0);
             }
         });
 

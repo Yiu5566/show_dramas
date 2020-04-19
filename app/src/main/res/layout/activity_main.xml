@@ -6,7 +6,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
+    android:orientation="vertical"
     android:background="#e9e9e9">
+
+    <EditText
+        android:id = "@+id/EditText01"
+        android:layout_width = "match_parent"
+        android:layout_height = "wrap_content"
+        android:textStyle="bold"
+        android:textColor = "#ff8c00"
+        android:textColorHighlight="#cccccc"
+        android:textScaleX="1.5"
+        android:typeface="monospace"
+        android:hint="提示字樣"
+        android:textColorHint="#238745"
+        android:singleLine = "true"
+        android:ellipsize="end"
+        android:inputType="none"/>
 
     <ListView
         android:id="@+id/listView"
