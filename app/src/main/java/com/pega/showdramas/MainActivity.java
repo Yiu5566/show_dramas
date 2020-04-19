@@ -2,8 +2,11 @@ package com.pega.showdramas;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.content.Context;
 import android.view.View;
@@ -19,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +34,40 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     ArrayList<Drama> dramasData;
     CustomAdapter customAdapter;
+
+    private TestHandler handler = new TestHandler(this);
+    final static int MSG_GET_JSON = 0;
+    final static int MSG_UPDATE_LISTVIEW = 1;
+
+    static class TestHandler extends Handler{
+
+        private WeakReference<Activity> mActivity;
+
+        TestHandler(Activity activity){
+            mActivity = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case MSG_GET_JSON:
+                    MainActivity activity = (MainActivity) mActivity.get();
+                    if (activity != null) {
+                        activity.handleMessage(msg);
+                        Log.i(TAG, "yiu case1");
+                    }
+                    Log.i(TAG, "yiu case2");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void handleMessage(Message msg){
+        Toast.makeText(this, "hahaha", Toast.LENGTH_LONG).show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +89,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //get drama data from an url
-        getData();
+        //getData();
+        Message msg = new Message();
+        msg.what = MSG_GET_JSON;
+        handler.sendMessage(msg);
     }
 
     @Override
