@@ -31,9 +31,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import static android.content.ContentValues.TAG;
-
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = "ShowDrama";
     ListView listView;
     Context context;
     ArrayList<Drama> dramasData;
@@ -167,12 +166,14 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     result.add(buffer.toString());
+                    break;
+                    default:
+                        result.add(statusCode);
             }
 
             return result;
         } catch (IOException e) {
-            Log.e(TAG, "IO Exception", e);
-            result.add(e);
+            result.add("Error: "+e);
             return result;
         } finally {
             if (urlConnection != null) {

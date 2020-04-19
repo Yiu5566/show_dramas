@@ -9,6 +9,15 @@
     android:orientation="vertical"
     android:background="#e9e9e9">
 
+    <TextView
+        android:id="@+id/error_msg"
+        android:visibility="invisible"
+        android:text=""
+        android:textColor="@color/colorPrimary"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <EditText
         android:id = "@+id/EditText01"
         android:layout_width = "match_parent"
