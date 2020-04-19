@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<Object> result = getJson();
                 String state = (String) result.get(0);
                 Log.i(TAG, "yiu use ArrayList to store state and data in handler:"+state);
+                Log.i(TAG,"yiu Thread:"+Thread.currentThread().getName());
 
                 Message message;
                 String obj = "OK";
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         context = this;
         setContentView(R.layout.activity_main);
+        Log.i(TAG,"yiu  ui Thread:"+Thread.currentThread().getName());
 
         //getviews
         listView = findViewById(R.id.listView);
