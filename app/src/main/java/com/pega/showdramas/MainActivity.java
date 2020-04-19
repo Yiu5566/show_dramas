@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     final static int MSG_GET_JSON = 0;
     final static int MSG_UPDATE_LISTVIEW = 1;
     final static int MSG_UPDATE_DB = 2;
+    final static int MSG_SHOW_NORMAL_UI = 3;
+    final static int MSG_SHOW_ERROR_UI = 4;
 
     //for Serializable
     public static final String INTENT_PARAM_KEY_DRAMA = "INTENT_PARAM_KEY_DRAMA";
@@ -69,11 +72,28 @@ public class MainActivity extends AppCompatActivity {
                     case MSG_UPDATE_DB:
                         activity.handle_msg_update_db(msg);
                         break;
+                    case MSG_SHOW_NORMAL_UI:
+                        activity.handle_msg_show_normal_ui(msg);
+                        break;
+                    case MSG_SHOW_ERROR_UI:
+                        activity.handle_msg_show_error_ui(msg);
+                        break;
                     default:
                         break;
                 }
             }
         }
+    }
+
+    private void handle_msg_show_normal_ui(Message msg){
+
+    }
+
+    private void handle_msg_show_error_ui(Message msg){
+        TextView error_v = this.findViewById(R.id.error_msg);
+        String err_info = (String) msg.obj;
+        error_v.setText(err_info);
+        error_v.setVisibility(View.VISIBLE);
     }
 
     private void handle_msg_update_db(Message msg){
@@ -123,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
                     handler.sendMessage(message);
                 }else{
                     Log.i(TAG, "yiu wrong handle："+ state);
+                    Message message;
+                    message = handler.obtainMessage(MSG_SHOW_ERROR_UI, state);
+                    handler.sendMessage(message);
                 }
             }
         };
